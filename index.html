@@ -3,45 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentry SDK Test Environment</title>
+    <title>Sentry SDK Test (index.js)</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div class="container">
-        <h1>Sentry SDK Loader</h1>
-        <p>This page loads the <code>inde.js</code> file you provided.</p>
+        <h1>Sentry Loader Test</h1>
+        <p>Loading <code>index.js</code>...</p>
         
         <div class="status-box">
-            <h3>Library Status:</h3>
-            <div id="output">Loading...</div>
+            <h3>SDK Status:</h3>
+            <div id="output">Initializing...</div>
         </div>
 
         <div class="controls">
-            <button onclick="console.log('Standard log check');">Log to Console</button>
-            <button onclick="checkGlobal()">Check __SENTRY__ Global</button>
+            <button onclick="console.log('Test log message');">Log to Console</button>
+            <button onclick="checkGlobal()">Check Status</button>
         </div>
     </div>
 
-    <script src="inde.js"></script>
+    <script src="index.js"></script>
 
     <script>
         const outputDiv = document.getElementById('output');
 
         function log(message, isSuccess) {
             outputDiv.innerHTML = message;
-            outputDiv.style.color = isSuccess ? '#2ecc71' : '#e74c3c';
-            outputDiv.style.borderColor = isSuccess ? '#2ecc71' : '#e74c3c';
+            outputDiv.className = isSuccess ? 'success' : 'error';
         }
 
         function checkGlobal() {
             // The code you provided attaches itself to the global object as __SENTRY__
             if (window.__SENTRY__) {
                 console.log('Sentry Object found:', window.__SENTRY__);
-                log("✅ Success! <code>window.__SENTRY__</code> is active.<br>Version: " + (window.__SENTRY__['8.40.0'] ? '8.40.0' : 'Unknown'), true);
+                
+                // Try to detect the version from the object structure
+                const versions = Object.keys(window.__SENTRY__);
+                const version = versions.find(v => v !== 'logger') || 'Unknown';
+                
+                log(`✅ <strong>Active</strong><br>Global Object: <code>window.__SENTRY__</code><br>Version detected: ${version}`, true);
             } else {
                 console.error('Sentry object not found.');
-                log("❌ Error: <code>window.__SENTRY__</code> is undefined. <br>Did you fix the syntax error at the end of inde.js?", false);
+                log("❌ <strong>Failed</strong><br><code>window.__SENTRY__</code> is undefined.<br><em>Did you remove the trailing 'function' word from index.js?</em>", false);
             }
         }
 
